@@ -358,6 +358,7 @@ class Blockchain(object):
         :return: True 如果区块有效，否则 False
         """
         # 1. 验证区块的索引
+        blockchain = get_blockchain()
         if block['index'] == len(self.chain) and block['index'] != 1:
             print("接受区块在原区块已经存在")
             return False
@@ -429,11 +430,14 @@ class Blockchain(object):
 node_identifier = str(uuid4()).replace('-','')
 
 # Instantiate the Blockchain
-blockchain = Blockchain()
-
+#blockchain = Blockchain()
+def get_blockchain():
+    # 每次调用时才初始化（或使用单例缓存）
+    return Blockchain()
 
 def broadcast_block(block):
     # 获取其他节点列表
+    blockchain = get_blockchain()
     nodes = blockchain.nodes
     # 遍历节点并发送新区块
     _, public_key = blockchain.node_key_pair
@@ -466,6 +470,7 @@ def broadcast_block(block):
 
 @csrf_exempt
 def receive_block(request):
+    blockchain = get_blockchain()
     data = json.loads(request.body.decode('utf-8'))
     received_block = data.get('block')
     received_public_key = data.get('public_key')
@@ -519,6 +524,7 @@ def receive_block(request):
 产生新的区块
 '''
 def mine():
+    blockchain = get_blockchain()
     last_block = blockchain.last_block
     #last_proof = last_block.proof
     proof = blockchain.proof_of_work(last_block)
@@ -539,6 +545,7 @@ def mine():
 
 @csrf_exempt
 def new_transaction(request):
+    blockchain = get_blockchain()
     values = json.loads(request.body.decode('utf-8'))
     required = ['sender','recipient','amount']
     if not all(k in values for k in required):
@@ -584,6 +591,7 @@ def block_to_dict(block):
 
 @csrf_exempt
 def full_chain(request):
+    blockchain = get_blockchain()
     # 获取区块链数据
     blockchain.chain = list(Block.objects.all().order_by('index'))
     blocks_data = [block_to_dict(block) for block in blockchain.chain]
@@ -600,6 +608,7 @@ def full_chain(request):
 
 @csrf_exempt
 def register_nodes(request):
+    blockchain = get_blockchain()
     values = json.loads(request.body.decode('utf-8'))
     nodes = values.get('node')
     print(nodes)
@@ -616,6 +625,7 @@ def register_nodes(request):
 
 
 def consensus(request):
+    blockchain = get_blockchain()
     replaced = blockchain.resolve_conflicts()
     response_data = {
         'message': 'Our chain was replaced' if replaced else 'Our chain is authoritative',

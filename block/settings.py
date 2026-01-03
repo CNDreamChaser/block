@@ -80,7 +80,7 @@ DATABASES = {
         "ENGINE": "django.db.backends.mysql",
         "NAME":  "blockchainapp",
         "USER":  "root",
-        "PASSWORD":  "yrj2004",
+        "PASSWORD":  "yrj20040218",
         "HOST": "127.0.0.1",
         "PORT": "3306",
     }
