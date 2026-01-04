@@ -159,6 +159,7 @@ class Blockchain(object):
         transaction['signature'] = signature
         transaction = Transaction(sender=sender, recipient=recipient, amount=amount, signature=signature)
         transaction.save()
+
         '''Transaction.objects.create(
 
             sender=sender,
