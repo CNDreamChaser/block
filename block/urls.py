@@ -21,6 +21,7 @@ from demo import views
 
 urlpatterns = [
     path('admin/', admin.site.urls),
+    path('', views.index),  # 添加根路径
     re_path(r'^mine', views.mine),
     re_path(r'^transactions/new/', views.new_transaction),
     re_path(r'^chain', views.full_chain),

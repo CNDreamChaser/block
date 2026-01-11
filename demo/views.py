@@ -635,7 +635,8 @@ def consensus(request):
     }
     return HttpResponse(json.dumps(response_data), content_type='application/json')
 
-
+def index(request):
+    return render(request, 'index1.html')
 
 
 

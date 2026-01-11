@@ -1,0 +1,423 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>区块链节点管理系统</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f5f7fa;
+            color: #333;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        header {
+            background-color: #2c3e50;
+            color: white;
+            padding: 20px 0;
+            margin-bottom: 30px;
+            text-align: center;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+        }
+
+        h2 {
+            color: #2c3e50;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #3498db;
+        }
+
+        .section {
+            background-color: white;
+            padding: 30px;
+            margin-bottom: 30px;
+            border-radius: 8px;
+            box-shadow: 0 2px 15px rgba(0,0,0,0.08);
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 600;
+            color: #555;
+        }
+
+        input, textarea {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 16px;
+            transition: border-color 0.3s ease;
+        }
+
+        input:focus, textarea:focus {
+            outline: none;
+            border-color: #3498db;
+            box-shadow: 0 0 0 2px rgba(52, 152, 219, 0.1);
+        }
+
+        button {
+            background-color: #3498db;
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 4px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+            margin-right: 10px;
+        }
+
+        button:hover {
+            background-color: #2980b9;
+        }
+
+        button.secondary {
+            background-color: #95a5a6;
+        }
+
+        button.secondary:hover {
+            background-color: #7f8c8d;
+        }
+
+        button.success {
+            background-color: #27ae60;
+        }
+
+        button.success:hover {
+            background-color: #229954;
+        }
+
+        button.danger {
+            background-color: #e74c3c;
+        }
+
+        button.danger:hover {
+            background-color: #c0392b;
+        }
+
+        .response {
+            background-color: #f8f9fa;
+            padding: 20px;
+            margin-top: 20px;
+            border-radius: 4px;
+            border-left: 4px solid #3498db;
+            font-family: 'Courier New', monospace;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+        }
+
+        .block-list {
+            margin-top: 20px;
+        }
+
+        .block {
+            background-color: #f8f9fa;
+            padding: 20px;
+            margin-bottom: 20px;
+            border-radius: 8px;
+            border: 1px solid #e9ecef;
+        }
+
+        .block-header {
+            font-weight: bold;
+            margin-bottom: 15px;
+            color: #2c3e50;
+        }
+
+        .transaction {
+            background-color: white;
+            padding: 15px;
+            margin-bottom: 10px;
+            border-radius: 4px;
+            border-left: 3px solid #3498db;
+        }
+
+        .transaction-info {
+            margin-bottom: 5px;
+        }
+
+        .signature {
+            font-family: 'Courier New', monospace;
+            font-size: 12px;
+            color: #666;
+            word-break: break-all;
+        }
+
+        .controls {
+            margin-bottom: 20px;
+        }
+
+        #baseUrl {
+            max-width: 300px;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 10px;
+            }
+
+            h1 {
+                font-size: 2rem;
+            }
+
+            .section {
+                padding: 20px;
+            }
+
+            button {
+                margin-bottom: 10px;
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="container">
+            <h1>区块链节点管理系统</h1>
+            <p>基于Django的区块链节点前端管理界面</p>
+        </div>
+    </header>
+
+    <div class="container">
+        <!-- 基础配置 -->
+        <div class="section">
+            <h2>基础配置</h2>
+            <div class="form-group">
+                <label for="baseUrl">后端服务地址</label>
+                <input type="text" id="baseUrl" value="http://127.0.0.1:8000" placeholder="输入后端服务地址">
+            </div>
+        </div>
+
+        <!-- 节点初始化 -->
+        <div class="section">
+            <h2>节点初始化</h2>
+            <div class="form-group">
+                <label for="nodePort">节点端口</label>
+                <input type="number" id="nodePort" value="8000" placeholder="输入节点端口号">
+            </div>
+            <button id="initNodeBtn">初始化节点</button>
+            <div id="initNodeResponse" class="response"></div>
+        </div>
+
+        <!-- 交易创建 -->
+        <div class="section">
+            <h2>创建交易</h2>
+            <div class="form-group">
+                <label for="sender">发送者地址</label>
+                <input type="text" id="sender" placeholder="输入发送者地址">
+            </div>
+            <div class="form-group">
+                <label for="recipient">接收者地址</label>
+                <input type="text" id="recipient" placeholder="输入接收者地址">
+            </div>
+            <div class="form-group">
+                <label for="amount">交易金额</label>
+                <input type="number" id="amount" placeholder="输入交易金额">
+            </div>
+            <button id="createTransactionBtn">创建交易</button>
+            <div id="transactionResponse" class="response"></div>
+        </div>
+
+        <!-- 区块链查看 -->
+        <div class="section">
+            <h2>区块链查看</h2>
+            <div class="controls">
+                <button id="viewChainBtn">查看完整区块链</button>
+                <button id="clearChainBtn" class="secondary">清空显示</button>
+            </div>
+            <div id="chainResponse" class="response"></div>
+            <div id="blockList" class="block-list"></div>
+        </div>
+
+        <!-- 节点注册 -->
+        <div class="section">
+            <h2>节点注册</h2>
+            <div class="form-group">
+                <label for="nodes">节点列表（每行一个节点）</label>
+                <textarea id="nodes" rows="3" placeholder="输入节点地址，如：127.0.0.1:8001"></textarea>
+            </div>
+            <button id="registerNodesBtn">注册节点</button>
+            <div id="registerNodesResponse" class="response"></div>
+        </div>
+
+        <!-- 共识管理 -->
+        <div class="section">
+            <h2>共识管理</h2>
+            <button id="consensusBtn">执行共识</button>
+            <div id="consensusResponse" class="response"></div>
+        </div>
+
+        <!-- 挖矿 -->
+        <div class="section">
+            <h2>挖矿</h2>
+            <button id="mineBtn" class="success">开始挖矿</button>
+            <div id="mineResponse" class="response"></div>
+        </div>
+    </div>
+
+    <script>
+        // 获取基础URL
+        function getBaseUrl() {
+            return document.getElementById('baseUrl').value;
+        }
+
+        // 显示响应结果
+        function showResponse(elementId, data, isJson = true) {
+            const element = document.getElementById(elementId);
+            if (isJson) {
+                element.textContent = JSON.stringify(data, null, 2);
+            } else {
+                element.textContent = data;
+            }
+        }
+
+        // 节点初始化
+        document.getElementById('initNodeBtn').addEventListener('click', async () => {
+            const port = document.getElementById('nodePort').value;
+            const response = await fetch(`${getBaseUrl()}/initialize_node/`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ port })
+            });
+            const data = await response.json();
+            showResponse('initNodeResponse', data);
+        });
+
+        // 创建交易
+        document.getElementById('createTransactionBtn').addEventListener('click', async () => {
+            const sender = document.getElementById('sender').value;
+            const recipient = document.getElementById('recipient').value;
+            const amount = parseInt(document.getElementById('amount').value);
+
+            if (!sender || !recipient || !amount) {
+                showResponse('transactionResponse', '请填写完整的交易信息', false);
+                return;
+            }
+
+            const response = await fetch(`${getBaseUrl()}/transactions/new/`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ sender, recipient, amount })
+            });
+            const data = await response.json();
+            showResponse('transactionResponse', data);
+        });
+
+        // 查看区块链
+        document.getElementById('viewChainBtn').addEventListener('click', async () => {
+            const response = await fetch(`${getBaseUrl()}/chain`);
+            const data = await response.json();
+
+            // 显示JSON响应
+            showResponse('chainResponse', data);
+
+            // 渲染区块链可视化
+            renderBlockchain(data.chain);
+        });
+
+        // 渲染区块链
+        function renderBlockchain(chain) {
+            const blockList = document.getElementById('blockList');
+            blockList.innerHTML = '';
+
+            chain.forEach((block, index) => {
+                const blockDiv = document.createElement('div');
+                blockDiv.className = 'block';
+
+                blockDiv.innerHTML = `
+                    <div class="block-header">区块 #${block.index} - 时间戳: ${block.timestamp}</div>
+                    <div>工作量证明: ${block.proof}</div>
+                    <div>前一个哈希: ${block.previous_hash}</div>
+                    <div style="margin-top: 15px; font-weight: bold;">交易列表:</div>
+                `;
+
+                // 添加交易
+                block.transactions.forEach((transaction, txIndex) => {
+                    const txDiv = document.createElement('div');
+                    txDiv.className = 'transaction';
+                    txDiv.innerHTML = `
+                        <div class="transaction-info">交易 #${txIndex + 1}</div>
+                        <div class="transaction-info">发送者: ${transaction.sender}</div>
+                        <div class="transaction-info">接收者: ${transaction.recipient}</div>
+                        <div class="transaction-info">金额: ${transaction.amount}</div>
+                        <div class="signature">签名: ${transaction.signature}</div>
+                    `;
+                    blockDiv.appendChild(txDiv);
+                });
+
+                blockList.appendChild(blockDiv);
+            });
+        }
+
+        // 清空区块链显示
+        document.getElementById('clearChainBtn').addEventListener('click', () => {
+            document.getElementById('chainResponse').textContent = '';
+            document.getElementById('blockList').innerHTML = '';
+        });
+
+        // 注册节点
+        document.getElementById('registerNodesBtn').addEventListener('click', async () => {
+            const nodesText = document.getElementById('nodes').value;
+            const nodes = nodesText.split('\n').filter(node => node.trim() !== '');
+
+            if (nodes.length === 0) {
+                showResponse('registerNodesResponse', '请输入至少一个节点地址', false);
+                return;
+            }
+
+            const response = await fetch(`${getBaseUrl()}/register`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ node: nodes })
+            });
+            const data = await response.json();
+            showResponse('registerNodesResponse', data);
+        });
+
+        // 执行共识
+        document.getElementById('consensusBtn').addEventListener('click', async () => {
+            const response = await fetch(`${getBaseUrl()}/resolve`);
+            const data = await response.json();
+            showResponse('consensusResponse', data);
+        });
+
+        // 挖矿
+        document.getElementById('mineBtn').addEventListener('click', async () => {
+            const response = await fetch(`${getBaseUrl()}/mine`);
+            const data = await response.json();
+            showResponse('mineResponse', data);
+        });
+    </script>
+</body>
+</html>
